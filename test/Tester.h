@@ -3,6 +3,7 @@
 #include "Map.h"
 #include "AVLTreeMap.h"
 #include <map>
+#include <iterator>
 #include <iostream>
 #include <vector>
 #include "Random.h"
@@ -20,7 +21,7 @@ public:
 	void testPutAndGet(Map<KeyType, ValueType> * testing_map);
 	void testHasKey(Map<KeyType, ValueType>* testing_map);
 	void testRemove(Map<KeyType, ValueType> * testing_map);
-	void testSpeed(Map<KeyType, ValueType> * testing_map);
+	void testSpeed(Map<KeyType, ValueType> * testing_map, string testing_map_name);
 private:
 	size_t test_num;
 	KeyType key_min, key_max;
@@ -101,7 +102,7 @@ inline void Tester<KeyType, ValueType>::testRemove(Map<KeyType, ValueType>* test
 	EXPECT_EQ(testing_map->size(), std_map.size());
 	size_t size = testing_map->size();
 	vector<KeyType> removed_keys;
-	map<KeyType, ValueType>::iterator it;
+	typename map<KeyType, ValueType>::iterator it;
 	while (testing_map->size() > size / 2) { //Remove half of the <key, value> pairs
 		key = key_random.rand();
 		testing_map->remove(key); //If key dose not exists, Map<KeyType, ValueType>::remove(KeyType key) function will not remove any <key, value> pair
@@ -132,7 +133,7 @@ inline void Tester<KeyType, ValueType>::testRemove(Map<KeyType, ValueType>* test
 }
 
 template<typename KeyType, typename ValueType>
-inline void Tester<KeyType, ValueType>::testSpeed(Map<KeyType, ValueType>* testing_map) {
+inline void Tester<KeyType, ValueType>::testSpeed(Map<KeyType, ValueType>* testing_map, string testing_map_name) {
 	int * key_set = new int[test_num];
 	int * value_set = new int[test_num];
 	//Random for key and value
@@ -148,13 +149,13 @@ inline void Tester<KeyType, ValueType>::testSpeed(Map<KeyType, ValueType>* testi
 
 	clock_t start, end;
 	//Put	
-	//AVLTreeMap
+	//Testing map
 	start = clock();
 	for (i = 0; i < test_num; i++) {
 		testing_map->put(key_set[i], value_set[i]);
 	}
 	end = clock();
-	cout << "Put random <key, value> pair : AVLTreeMap cost " << (end - start) << "ms" << endl;
+	cout << "Put random <key, value> pair : " << testing_map_name << " cost " << (end - start) << "ms" << endl;
 
 	//std::map
 	start = clock();
@@ -165,14 +166,14 @@ inline void Tester<KeyType, ValueType>::testSpeed(Map<KeyType, ValueType>* testi
 	cout << "Insert random <key, value> pair : std::map cost " << (end - start) << "ms" << endl;
 
 	//Get	
-	//AVLTreeMap
+	//Testing map
 	start = clock();
 	for (i = 0; i < test_num; i++) {
 		int value;
 		testing_map->get(key_set[i], &value);
 	}
 	end = clock();
-	cout << "Get value by key : AVLTreeMap cost " << (end - start) << "ms" << endl;
+	cout << "Get value by key : " << testing_map_name << " cost " << (end - start) << "ms" << endl;
 
 	//std::map
 	start = clock();
@@ -183,13 +184,13 @@ inline void Tester<KeyType, ValueType>::testSpeed(Map<KeyType, ValueType>* testi
 	cout << "Get value by key : std::map cost " << (end - start) << "ms" << endl;
 
 	//Remove
-	//AVLTreeMap
+	//Testing map
 	start = clock();
 	for (i = 0; i < test_num; i++) {
 		testing_map->remove(key_set[i]);
 	}
 	end = clock();
-	cout << "Remove all the <key, value> pairs : AVLTreeMap cost " << (end - start) << "ms" << endl;
+	cout << "Remove all the <key, value> pairs : " << testing_map_name << " cost " << (end - start) << "ms" << endl;
 
 	//std::map
 	start = clock();
@@ -204,13 +205,13 @@ inline void Tester<KeyType, ValueType>::testSpeed(Map<KeyType, ValueType>* testi
 	cout << "Remove all the <key, value> pairs : std::map cost " << (end - start) << "ms" << endl;
 
 	//Put increasing key
-	//AVLTreeMap
+	//Testing map
 	start = clock();
 	for (i = 0; i < test_num; i++) {
 		testing_map->put(i, value_set[i]); //i as key
 	}
 	end = clock();
-	cout << "Put increasing key : AVLTreeMap cost " << (end - start) << "ms" << endl;
+	cout << "Put increasing key : " << testing_map_name << " cost " << (end - start) << "ms" << endl;
 
 	//std::map
 	start = clock();

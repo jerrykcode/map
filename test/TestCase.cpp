@@ -30,6 +30,6 @@ TEST(AVLTreeMap, IntIntRemove) {
 TEST(AVLTreeMap, SPEED) {
 	Tester<int, int> tester(test_num, 0 - test_num, test_num, 0 - test_num, test_num);
 	Map<int, int> * map = new AVLTreeMap<int, int>();
-	tester.testSpeed(map);
+	tester.testSpeed(map, "AVLTreeMap");
 	delete map;
 }

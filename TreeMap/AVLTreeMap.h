@@ -1,15 +1,11 @@
 #pragma once
 #include "TreeMap.h"
 
-#ifndef max
-#define max(a, b) ((a) > (b) ? (a) : (b))
-#endif
-
 template<typename KeyType, typename ValueType>
 class AVLTreeMap : public TreeMap<KeyType, ValueType> {
 public:
 
-	AVLTreeMap<KeyType, ValueType>();
+	AVLTreeMap<KeyType, ValueType>() : tree(NULL), size_(0){}
 	virtual ~AVLTreeMap<KeyType, ValueType>();
 
 	virtual void put(KeyType key, ValueType value);
@@ -40,6 +36,8 @@ private:
 	Tree remove(Tree tree, KeyType key);
 
 	void deleteTree(Tree tree);
+
+	size_t max(size_t a, size_t b) {return a > b ? a : b; }
 private:
 	Tree tree;
 	size_t size_;
@@ -52,8 +50,8 @@ typename  AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::l
 	Tree k = tree->right;
 	tree->right = k->left;
 	k->left = tree;
-	tree->height = max(getHeight(tree->left), getHeight(tree->right)) + 1;
-	k->height = max(tree->height, getHeight(k->right)) + 1;
+	tree->height = this->max(getHeight(tree->left), getHeight(tree->right)) + 1;
+	k->height = this->max(tree->height, getHeight(k->right)) + 1;
 	return k;
 }
 
@@ -62,8 +60,8 @@ typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::ri
 	Tree k = tree->left;
 	tree->left = k->right;
 	k->right = tree;
-	tree->height = max(getHeight(tree->left), getHeight(tree->right)) + 1;
-	k->height = max(getHeight(k->left), tree->height) + 1;
+	tree->height = this->max(getHeight(tree->left), getHeight(tree->right)) + 1;
+	k->height = this->max(getHeight(k->left), tree->height) + 1;
 	return k;
 }
 
@@ -107,7 +105,7 @@ typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::in
 			tree = leftRotate(tree);
 		}
 	}
-	tree->height = max(getHeight(tree->left), getHeight(tree->right)) + 1;
+	tree->height = this->max(getHeight(tree->left), getHeight(tree->right)) + 1;
 	return tree;
 }
 
@@ -170,7 +168,7 @@ typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::re
 			size_--;
 		}
 	}
-	if (tree) tree->height = max(getHeight(tree->left), getHeight(tree->right)) + 1;
+	if (tree) tree->height = this->max(getHeight(tree->left), getHeight(tree->right)) + 1;
 	return tree;
 }
 
@@ -185,12 +183,6 @@ void AVLTreeMap<KeyType, ValueType>::deleteTree(Tree tree) {
 /*------------------------------------------ AVL Tree end --------------------------------------------*/
 
 /*------------------------------------------- AVLTreeMap public functions -------------------------------------------*/
-
-//Constructor
-template<typename KeyType, typename ValueType>
-AVLTreeMap<KeyType, ValueType>::AVLTreeMap < KeyType, ValueType>()  : tree(NULL), size_(0) {
-	
-}
 
 //Destructor
 template<typename KeyType, typename ValueType>
