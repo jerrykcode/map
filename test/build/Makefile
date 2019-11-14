@@ -88,8 +88,8 @@ gtest_main.a : gtest-all.o gtest_main.o
 # gtest_main.a, depending on whether it defines its own main()
 # function.
 
-testcase.o : $(USER_DIR)/TestCase.cpp $(USER_DIR)/Tester.h $(USER_DIR)/Random.h $(MAP_DIR)/Map.h $(TREE_MAP_DIR)/TreeMap.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/TestCase.cpp
+testcase.o : $(USER_DIR)/TestCase.cc $(USER_DIR)/Tester.h $(USER_DIR)/Random.h $(MAP_DIR)/Map.h $(TREE_MAP_DIR)/TreeMap.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/TestCase.cc
 
 testcase$(EXECUTABLE) : testcase.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
