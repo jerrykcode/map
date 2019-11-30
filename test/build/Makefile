@@ -26,11 +26,12 @@ endif
 
 # Points to the root of Google Test, relative to where this file is.
 # Remember to tweak this if you move this file.
-GTEST_DIR = E:/gitcode/download/googletest-release-1.8.1/googletest
+ROOT_DIR = ../..
+GTEST_DIR = $(ROOT_DIR)/../googletest/googletest
 
 # Where to find user code.
 USER_DIR = ..
-MAP_DIR = $(USER_DIR)/..
+MAP_DIR = $(ROOT_DIR)
 TREE_MAP_DIR = $(MAP_DIR)/TreeMap
 
 # Flags passed to the preprocessor.
@@ -40,7 +41,7 @@ CPPFLAGS += -isystem $(GTEST_DIR)/include
 CPPFLAGS += -I$(USER_DIR) -I$(MAP_DIR) -I$(TREE_MAP_DIR)
 
 # Flags passed to the C++ compiler.
-CXXFLAGS += -g -Wall -Wextra -pthread
+CXXFLAGS += -g -Wall -Wextra -pthread -std=c++11
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
@@ -88,8 +89,8 @@ gtest_main.a : gtest-all.o gtest_main.o
 # gtest_main.a, depending on whether it defines its own main()
 # function.
 
-testcase.o : $(USER_DIR)/TestCase.cc $(USER_DIR)/Tester.h $(USER_DIR)/Random.h $(MAP_DIR)/Map.h $(TREE_MAP_DIR)/TreeMap.h $(GTEST_HEADERS)
+TestCase.o : $(USER_DIR)/TestCase.cc $(USER_DIR)/Tester.h $(USER_DIR)/Random.h $(MAP_DIR)/Map.h $(TREE_MAP_DIR)/TreeMap.h $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/TestCase.cc
 
-testcase$(EXECUTABLE) : testcase.o gtest_main.a
+testcase$(EXECUTABLE) : TestCase.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
