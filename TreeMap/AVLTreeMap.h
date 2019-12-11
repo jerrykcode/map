@@ -8,7 +8,7 @@ public:
 	AVLTreeMap<KeyType, ValueType>() : tree(NULL), size_(0){}
 	virtual ~AVLTreeMap<KeyType, ValueType>();
 
-	virtual void put(KeyType key, ValueType value);
+	virtual void update(KeyType key, Updater<KeyType, ValueType> * p_updater);
 	virtual bool get(KeyType key, ValueType * p_value);
 	virtual bool hasKey(KeyType key);
 	virtual void remove(KeyType key);
@@ -32,7 +32,7 @@ private:
 	Tree rightRotate(Tree tree);
 
 	Tree search(Tree tree, KeyType key);
-	Tree insert(Tree tree, KeyType key, ValueType value);
+	Tree insert(Tree tree, KeyType key, Updater<KeyType, ValueType> * p_updater);
 	Tree remove(Tree tree, KeyType key);
 
 	void deleteTree(Tree tree);
@@ -79,16 +79,20 @@ typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::se
 }
 
 template<typename KeyType, typename ValueType>
-typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::insert(AVLTreeMap<KeyType, ValueType>::Tree tree, KeyType key, ValueType value) {
+typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::insert(AVLTreeMap<KeyType, ValueType>::Tree tree, KeyType key, Updater<KeyType, ValueType> * p_updater) {
 	if (tree == NULL) {
-		size_++;
-		return new TNode(key, value);
+		ValueType value;
+		if (p_updater->needNewKeyValuePair(&key, &value)) {
+			size_++;
+			return new TNode(key, value);
+		}
+		return NULL;
 	}
 	if (key == tree->key) {
-		tree->value = value;		
+		p_updater->updateKeyValuePair(&tree->key, &tree->value);
 	}
 	else if (key < tree->key) { //Insert into the left
-		tree->left = insert(tree->left, key, value);
+		tree->left = insert(tree->left, key, p_updater);
 		if (getHeight(tree->left) - getHeight(tree->right) == 2) {
 			if (key > tree->left->key) { //Insert into the right child of the left child
 				tree->left = leftRotate(tree->left);
@@ -97,7 +101,7 @@ typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::in
 		}
 	}
 	else { //Insert into the right
-		tree->right = insert(tree -> right, key, value);
+		tree->right = insert(tree -> right, key, p_updater);
 		if (getHeight(tree->right) - getHeight(tree->left) == 2) {
 			if (key < tree->right->key) { //Insert into the left child of the right child
 				tree->right = rightRotate(tree->right);
@@ -191,8 +195,8 @@ AVLTreeMap<KeyType, ValueType>::~AVLTreeMap < KeyType, ValueType>() {
 }
 
 template<typename KeyType, typename ValueType>
-void AVLTreeMap<KeyType, ValueType>::put(KeyType key, ValueType value) {
-	tree = insert(tree, key, value);
+void AVLTreeMap<KeyType, ValueType>::update(KeyType key, Updater<KeyType, ValueType> * p_updater) {
+	tree = insert(tree, key, p_updater);
 }
 
 template<typename KeyType, typename ValueType>
