@@ -1,5 +1,5 @@
 #pragma once
-#include "TreeMap.h"
+#include "treemap.h"
 
 template<typename KeyType, typename ValueType>
 class AVLTreeMap : public TreeMap<KeyType, ValueType> {
@@ -8,11 +8,11 @@ public:
 	AVLTreeMap<KeyType, ValueType>() : tree(NULL), size_(0){}
 	virtual ~AVLTreeMap<KeyType, ValueType>();
 
-	virtual void update(KeyType key, Updater<KeyType, ValueType> * p_updater);
-	virtual bool get(KeyType key, ValueType * p_value);
-	virtual bool hasKey(KeyType key);
-	virtual void remove(KeyType key);
-	virtual size_t size();
+	virtual void Update(KeyType key, Updater<KeyType, ValueType> * p_updater);
+	virtual bool Get(KeyType key, ValueType * p_value);
+	virtual bool HasKey(KeyType key);
+	virtual void Remove(KeyType key);
+	virtual size_t Size();
 private:
 
 	//Define AVL Tree structure
@@ -26,18 +26,18 @@ private:
 		TNode(KeyType key, ValueType value)  : key(key), value(value), left(NULL), right(NULL), height(1) {}		
 	} *Tree;
 
-	size_t getHeight(Tree tree) { return tree ? tree->height : 0; }
+	size_t GetHeight(Tree tree) { return tree ? tree->height : 0; }
 
-	Tree leftRotate(Tree tree);
-	Tree rightRotate(Tree tree);
+	Tree LeftRotate(Tree tree);
+	Tree RightRotate(Tree tree);
 
-	Tree search(Tree tree, KeyType key);
-	Tree insert(Tree tree, KeyType key, Updater<KeyType, ValueType> * p_updater);
-	Tree remove(Tree tree, KeyType key);
+	Tree Search(Tree tree, KeyType key);
+	Tree Insert(Tree tree, KeyType key, Updater<KeyType, ValueType> * p_updater);
+	Tree Remove(Tree tree, KeyType key);
 
-	void deleteTree(Tree tree);
+	void DeleteTree(Tree tree);
 
-	size_t max(size_t a, size_t b) {return a > b ? a : b; }
+	size_t Max(size_t a, size_t b) {return a > b ? a : b; }
 private:
 	Tree tree;
 	size_t size_;
@@ -46,103 +46,103 @@ private:
 /*------------------------------------------ AVL Tree --------------------------------------------*/
 
 template<typename KeyType, typename ValueType>
-typename  AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::leftRotate(AVLTreeMap<KeyType, ValueType>::Tree tree) {
+typename  AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::LeftRotate(AVLTreeMap<KeyType, ValueType>::Tree tree) {
 	Tree k = tree->right;
 	tree->right = k->left;
 	k->left = tree;
-	tree->height = this->max(getHeight(tree->left), getHeight(tree->right)) + 1;
-	k->height = this->max(tree->height, getHeight(k->right)) + 1;
+	tree->height = this->Max(GetHeight(tree->left), GetHeight(tree->right)) + 1;
+	k->height = this->Max(tree->height, GetHeight(k->right)) + 1;
 	return k;
 }
 
 template<typename KeyType, typename ValueType>
-typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::rightRotate(AVLTreeMap<KeyType, ValueType>::Tree tree) {
+typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::RightRotate(AVLTreeMap<KeyType, ValueType>::Tree tree) {
 	Tree k = tree->left;
 	tree->left = k->right;
 	k->right = tree;
-	tree->height = this->max(getHeight(tree->left), getHeight(tree->right)) + 1;
-	k->height = this->max(getHeight(k->left), tree->height) + 1;
+	tree->height = this->Max(GetHeight(tree->left), GetHeight(tree->right)) + 1;
+	k->height = this->Max(GetHeight(k->left), tree->height) + 1;
 	return k;
 }
 
 template<typename KeyType, typename ValueType>
-typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::search(AVLTreeMap<KeyType, ValueType>::Tree tree, KeyType key) {
+typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::Search(AVLTreeMap<KeyType, ValueType>::Tree tree, KeyType key) {
 	if (tree == NULL) {
 		return NULL;
 	}
 	if (tree->key == key)
 		return tree;
 	else if (key < tree->key)
-		return search(tree->left, key);
+		return Search(tree->left, key);
 	else
-		return search(tree->right, key);
+		return Search(tree->right, key);
 }
 
 template<typename KeyType, typename ValueType>
-typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::insert(AVLTreeMap<KeyType, ValueType>::Tree tree, KeyType key, Updater<KeyType, ValueType> * p_updater) {
+typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::Insert(AVLTreeMap<KeyType, ValueType>::Tree tree, KeyType key, Updater<KeyType, ValueType> * p_updater) {
 	if (tree == NULL) {
 		ValueType value;
-		if (p_updater->needNewKeyValuePair(&key, &value)) {
+		if (p_updater->NeedNewKeyValuePair(&key, &value)) {
 			size_++;
 			return new TNode(key, value);
 		}
 		return NULL;
 	}
 	if (key == tree->key) {
-		p_updater->updateKeyValuePair(&tree->key, &tree->value);
+		p_updater->UpdateKeyValuePair(&tree->key, &tree->value);
 	}
 	else if (key < tree->key) { //Insert into the left
-		tree->left = insert(tree->left, key, p_updater);
-		if (getHeight(tree->left) - getHeight(tree->right) == 2) {
+		tree->left = Insert(tree->left, key, p_updater);
+		if (GetHeight(tree->left) - GetHeight(tree->right) == 2) {
 			if (key > tree->left->key) { //Insert into the right child of the left child
-				tree->left = leftRotate(tree->left);
+				tree->left = LeftRotate(tree->left);
 			}
-			tree = rightRotate(tree);
+			tree = RightRotate(tree);
 		}
 	}
 	else { //Insert into the right
-		tree->right = insert(tree -> right, key, p_updater);
-		if (getHeight(tree->right) - getHeight(tree->left) == 2) {
+		tree->right = Insert(tree -> right, key, p_updater);
+		if (GetHeight(tree->right) - GetHeight(tree->left) == 2) {
 			if (key < tree->right->key) { //Insert into the left child of the right child
-				tree->right = rightRotate(tree->right);
+				tree->right = RightRotate(tree->right);
 			}
-			tree = leftRotate(tree);
+			tree = LeftRotate(tree);
 		}
 	}
-	tree->height = this->max(getHeight(tree->left), getHeight(tree->right)) + 1;
+	tree->height = this->Max(GetHeight(tree->left), GetHeight(tree->right)) + 1;
 	return tree;
 }
 
 template<typename KeyType, typename ValueType>
-typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::remove(AVLTreeMap<KeyType, ValueType>::Tree tree, KeyType key) {
+typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::Remove(AVLTreeMap<KeyType, ValueType>::Tree tree, KeyType key) {
 	if (tree == NULL) {
 		return NULL; //Nothing removed
 	}
 	if (key < tree->key) { //The removing node (<key, value> pair) is in the left child
-		tree->left = remove(tree->left, key);
+		tree->left = Remove(tree->left, key);
 		//After removing a node form the left child of the tree, the height of the left tree may decrease 
 		//and (height of the right subtree - height of the left subtree) may increase, similar to inserting 
 		//an element into the right subtree.
-		if (getHeight(tree->right) - getHeight(tree->left) == 2) {
-			if (getHeight(tree->right->left) > getHeight(tree->right->right)) {
-				tree->right = rightRotate(tree->right);
+		if (GetHeight(tree->right) - GetHeight(tree->left) == 2) {
+			if (GetHeight(tree->right->left) > GetHeight(tree->right->right)) {
+				tree->right = RightRotate(tree->right);
 			}
-			tree = leftRotate(tree);
+			tree = LeftRotate(tree);
 		}
 	}
 	else if (key > tree->key) {  //The removing node (<key, value> pair) is in the right child
 		//Symmetric with removing nodes in the left subtree
-		tree->right = remove(tree->right, key);
-		if (getHeight(tree->left) - getHeight(tree->right) == 2) {
-			if (getHeight(tree->left->right) > getHeight(tree->left->left)) {
-				tree->left = leftRotate(tree->left);
+		tree->right = Remove(tree->right, key);
+		if (GetHeight(tree->left) - GetHeight(tree->right) == 2) {
+			if (GetHeight(tree->left->right) > GetHeight(tree->left->left)) {
+				tree->left = LeftRotate(tree->left);
 			}
-			tree = rightRotate(tree);
+			tree = RightRotate(tree);
 		}
 	}
 	else { //key == tree->key, tree is the node that needs to be removed
 		if (tree->left && tree->right) { //tree has both left child and right child
-			if (getHeight(tree->left) > getHeight(tree->right)) {
+			if (GetHeight(tree->left) > GetHeight(tree->right)) {
 				//Replace tree by the node with maximum key in the left subtree
 				//Find the node with maximum key in the left subtree
 				Tree max = tree->left;
@@ -151,7 +151,7 @@ typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::re
 				}
 				tree->key = max->key; //replace
 				tree->value = max->value; //replace
-				tree->left = remove(tree->left, max->key);
+				tree->left = Remove(tree->left, max->key);
 			}
 			else {
 				//Replace tree by the node with minimum key in the right subtree
@@ -162,7 +162,7 @@ typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::re
 				}
 				tree->key = min->key; //replace
 				tree->value = min->value; //replace
-				tree->right = remove(tree->right, min->key);
+				tree->right = Remove(tree->right, min->key);
 			}
 		}
 		else {
@@ -172,15 +172,15 @@ typename AVLTreeMap<KeyType, ValueType>::Tree AVLTreeMap<KeyType, ValueType>::re
 			size_--;
 		}
 	}
-	if (tree) tree->height = this->max(getHeight(tree->left), getHeight(tree->right)) + 1;
+	if (tree) tree->height = this->Max(GetHeight(tree->left), GetHeight(tree->right)) + 1;
 	return tree;
 }
 
 template<typename KeyType, typename ValueType>
-void AVLTreeMap<KeyType, ValueType>::deleteTree(Tree tree) {
+void AVLTreeMap<KeyType, ValueType>::DeleteTree(Tree tree) {
 	if (tree == NULL) return;
-	if (tree->left) deleteTree(tree->left);
-	if (tree->right) deleteTree(tree->right);
+	if (tree->left) DeleteTree(tree->left);
+	if (tree->right) DeleteTree(tree->right);
 	delete tree;
 }
 
@@ -191,17 +191,17 @@ void AVLTreeMap<KeyType, ValueType>::deleteTree(Tree tree) {
 //Destructor
 template<typename KeyType, typename ValueType>
 AVLTreeMap<KeyType, ValueType>::~AVLTreeMap < KeyType, ValueType>() {
-	deleteTree(tree);
+	DeleteTree(tree);
 }
 
 template<typename KeyType, typename ValueType>
-void AVLTreeMap<KeyType, ValueType>::update(KeyType key, Updater<KeyType, ValueType> * p_updater) {
-	tree = insert(tree, key, p_updater);
+void AVLTreeMap<KeyType, ValueType>::Update(KeyType key, Updater<KeyType, ValueType> * p_updater) {
+	tree = Insert(tree, key, p_updater);
 }
 
 template<typename KeyType, typename ValueType>
-bool AVLTreeMap<KeyType, ValueType>::get(KeyType key, ValueType * p_value) {
-	Tree result = search(tree, key);
+bool AVLTreeMap<KeyType, ValueType>::Get(KeyType key, ValueType * p_value) {
+	Tree result = Search(tree, key);
 	if (result) {
 		*p_value = result->value;
 		return true;
@@ -210,16 +210,16 @@ bool AVLTreeMap<KeyType, ValueType>::get(KeyType key, ValueType * p_value) {
 }
 
 template<typename KeyType, typename ValueType>
-bool AVLTreeMap<KeyType, ValueType>::hasKey(KeyType key) {
-	return (search(tree, key) != NULL);
+bool AVLTreeMap<KeyType, ValueType>::HasKey(KeyType key) {
+	return (Search(tree, key) != NULL);
 }
 
 template<typename KeyType, typename ValueType>
-void AVLTreeMap<KeyType, ValueType>::remove(KeyType key) {
-	tree = remove(tree, key);
+void AVLTreeMap<KeyType, ValueType>::Remove(KeyType key) {
+	tree = Remove(tree, key);
 }
 
 template<typename KeyType, typename ValueType>
-size_t AVLTreeMap<KeyType, ValueType>::size() {
+size_t AVLTreeMap<KeyType, ValueType>::Size() {
 	return size_;
 }

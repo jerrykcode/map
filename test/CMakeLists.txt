@@ -1,6 +1,6 @@
 add_executable(
     unit_tests
-    TestCase.cc
+    testcase.cc
     )
 
 target_link_libraries(
@@ -10,7 +10,7 @@ target_link_libraries(
 
 include_directories(
     ${CMAKE_CURRENT_LIST_DIR}/..
-    ${CMAKE_CURRENT_LIST_DIR}/../TreeMap
+    ${CMAKE_CURRENT_LIST_DIR}/../src
     )
 
 add_test(

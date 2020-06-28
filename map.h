@@ -1,6 +1,6 @@
 #pragma once
 #include <cstdlib>
-#include "Updater.h"
+#include "updater.h"
 
 template<typename KeyType, typename ValueType>
 class Map {
@@ -10,11 +10,11 @@ private:
 		PutUpdater(ValueType new_value) : new_value(new_value) {}
 		virtual ~PutUpdater() {}
 
-		virtual void updateKeyValuePair(KeyType * p_key, ValueType * p_value) {
+		virtual void UpdateKeyValuePair(KeyType * p_key, ValueType * p_value) {
 			*p_value = new_value;
 		}
 
-		virtual bool needNewKeyValuePair(KeyType * p_key, ValueType * p_value) {
+		virtual bool NeedNewKeyValuePair(KeyType * p_key, ValueType * p_value) {
 			*p_value = new_value;
 			return true;
 		}
@@ -23,17 +23,17 @@ private:
 	};
 
 public:
-	void put(KeyType key, ValueType value) {
+	void Put(KeyType key, ValueType value) {
 		Updater<KeyType, ValueType> * p_updater = new PutUpdater(value);
-		update(key, p_updater);
+		Update(key, p_updater);
 		delete p_updater;
 	}
 
-	virtual void update(KeyType key, Updater<KeyType, ValueType> * p_updater) = 0;
-	virtual bool get(KeyType key, ValueType * p_value) = 0;
-	virtual bool hasKey(KeyType key) = 0;
-	virtual void remove(KeyType key) = 0;
-	virtual size_t size() = 0;
+	virtual void Update(KeyType key, Updater<KeyType, ValueType> * p_updater) = 0;
+	virtual bool Get(KeyType key, ValueType * p_value) = 0;
+	virtual bool HasKey(KeyType key) = 0;
+	virtual void Remove(KeyType key) = 0;
+	virtual size_t Size() = 0;
 
 	virtual ~Map<KeyType, ValueType>() {}
 };

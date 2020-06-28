@@ -16,7 +16,7 @@ public:
 		distribution = *(new uniform_int_distribution<T>(min, max));
 	}
 
-	T rand() {
+	T Rand() {
 		return distribution(generator);
 	}
 };
