@@ -1,6 +1,7 @@
 add_executable(
     unit_tests
     testcase.cc
+    test_sbtreemap.cc
     )
 
 target_link_libraries(
