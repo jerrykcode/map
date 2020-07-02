@@ -105,7 +105,7 @@ inline void Tester<KeyType, ValueType>::TestRemove(Map<KeyType, ValueType>* test
 	typename map<KeyType, ValueType>::iterator it;
 	while (testing_map->Size() > size / 2) { //Remove half of the <key, value> pairs
 		key = key_random.Rand();
-		testing_map->Remove(key); //If key dose not exists, Map<KeyType, ValueType>::remove(KeyType key) function will not remove any <key, value> pair
+        testing_map->Remove(key); //If key dose not exists, Map<KeyType, ValueType>::remove(KeyType key) function will not remove any <key, value> pair
 		it = std_map.find(key);		
 		if (it != std_map.end()) std_map.erase(it);		
 		removed_keys.push_back(key);

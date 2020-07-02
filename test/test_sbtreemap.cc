@@ -4,31 +4,31 @@
 #include "tester.h"
 using namespace std;
 
-size_t test_num = 100000;
+size_t sbt_test_num = 100000;
 
 TEST(SBTreeMap, IntIntPutAndGet) {
-	Tester<int, int> tester(test_num, 0 - test_num, test_num, 0 - test_num, test_num);
+	Tester<int, int> tester(sbt_test_num, 0 - sbt_test_num, sbt_test_num, 0 - sbt_test_num, sbt_test_num);
 	Map<int, int> * map = new SBTreeMap<int, int>();
 	tester.TestPutAndGet(map);
 	delete map;
 }
 
 TEST(SBTreeMap, IntIntHasKey) {
-	Tester<int, int> tester(test_num, 0 - test_num/100, test_num/100, 0 - test_num/100, test_num/100);
+	Tester<int, int> tester(sbt_test_num, 0 - sbt_test_num/100, sbt_test_num/100, 0 - sbt_test_num/100, sbt_test_num/100);
 	Map<int, int> * map = new SBTreeMap<int, int>();
 	tester.TestHasKey(map);
 	delete map;
 }
 
 TEST(SBTreeMap, IntIntRemove) {
-	Tester<int, int> tester(test_num, 0 - test_num, test_num, 0 - test_num, test_num);
+	Tester<int, int> tester(sbt_test_num, 0 - sbt_test_num, sbt_test_num, 0 - sbt_test_num, sbt_test_num);
 	Map<int, int> * map = new SBTreeMap<int, int>();
 	tester.TestRemove(map);
 	delete map;
 }
 
 TEST(SBTreeMap, SPEED) {
-	Tester<int, int> tester(test_num, 0 - test_num, test_num, 0 - test_num, test_num);
+	Tester<int, int> tester(sbt_test_num, 0 - sbt_test_num, sbt_test_num, 0 - sbt_test_num, sbt_test_num);
 	Map<int, int> * map = new SBTreeMap<int, int>();
 	tester.TestSpeed(map, "SBTreeMap");
 	delete map;

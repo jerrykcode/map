@@ -1,6 +1,6 @@
 add_executable(
     unit_tests
-    testcase.cc
+    test_avltreemap.cc
     test_sbtreemap.cc
     )
 
