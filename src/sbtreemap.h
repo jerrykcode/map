@@ -45,6 +45,7 @@ private:
 
 
 /* ---------------------------------------------------------------- SBTreeMap private functions ---------------------------------------------------------------- */
+
 template<typename KeyType, typename ValueType>
 typename SBTreeMap<KeyType, ValueType>::Tree SBTreeMap<KeyType, ValueType>::LeftRotate(SBTreeMap<KeyType, ValueType>::Tree t) {
     Tree k = t->right;
@@ -61,14 +62,15 @@ typename SBTreeMap<KeyType, ValueType>::Tree SBTreeMap<KeyType, ValueType>::Righ
     t->left = k->right;
     k->right = t;
     k->size = t->size;
-    t->size = GetSize(t->left) + GetSize(t->right) + 1;
+    t->size = GetSize(t->left) + GetSize(t->right) + 1;	
     return k;
 }
 
 template<typename KeyType, typename ValueType>
 typename SBTreeMap<KeyType, ValueType>::Tree SBTreeMap<KeyType, ValueType>::Maintain(SBTreeMap<KeyType, ValueType>::Tree t) {
-    t = MaintainLeft(t);
-    return MaintainRight(t);
+    return MaintainRight(
+        MaintainLeft(t)
+       );
 }
 
 template<typename KeyType, typename ValueType>
@@ -108,29 +110,29 @@ typename SBTreeMap<KeyType, ValueType>::Tree SBTreeMap<KeyType, ValueType>::Main
 }
 
 template<typename KeyType, typename ValueType>
-typename SBTreeMap<KeyType, ValueType>::Tree SBTreeMap<KeyType, ValueType>::Insert(SBTreeMap<KeyType, ValueType>::Tree t, KeyType key, Updater<KeyType, ValueType> *p_updater) {
+typename SBTreeMap<KeyType, ValueType>::Tree SBTreeMap<KeyType, ValueType>::Insert(SBTreeMap<KeyType, ValueType>::Tree t, KeyType key, Updater<KeyType, ValueType> *p_Updater) {
     if (t == NULL) {
         ValueType value;
-        if (p_updater->NeedNewKeyValuePair(&key, &value)) {
+        if (p_Updater->NeedNewKeyValuePair(&key, &value)) {
             t = new TNode(key, value);
         }
         return t;
     }
     if (key == t->key) {
-        p_updater->UpdateKeyValuePair(&t->key, &t->value);
+        p_Updater->UpdateKeyValuePair(&t->key, &t->value);
     }
     else if (key < t->key) {
-        size_t tmp_size = GetSize(t->left);
-        t->left = Insert(t->left, key, p_updater);
-        if (GetSize(t->left) > tmp_size) {
+        size_t left_size = GetSize(t->left);
+        t->left = Insert(t->left, key, p_Updater);
+        if (GetSize(t->left) > left_size) {
             t->size++;
             t = MaintainLeft(t);
         }
     }
-    else {
-        size_t tmp_size = GetSize(t->right);
-        t->right = Insert(t->right, key, p_updater);
-        if (GetSize(t->right) > tmp_size) {
+    else { //key > t->key
+        size_t right_size = GetSize(t->right);
+        t->right = Insert(t->right, key, p_Updater);
+        if (GetSize(t->right) > right_size) {
             t->size++;
             t = MaintainRight(t);
         }
@@ -140,64 +142,52 @@ typename SBTreeMap<KeyType, ValueType>::Tree SBTreeMap<KeyType, ValueType>::Inse
 
 template<typename KeyType, typename ValueType>
 typename SBTreeMap<KeyType, ValueType>::Tree SBTreeMap<KeyType, ValueType>::Search(SBTreeMap<KeyType, ValueType>::Tree t, KeyType key) {
-    if (t == NULL) {
-        return t;
-    }
-    if (key == t->key) {
-        return t;
-    }
-    if (key < t->key) {
+    if (t == NULL) return t;
+    if (key == t->key) 
+        return t;	
+    else if (key < t->key) 
         return Search(t->left, key);
-    }
-    else {
+    else //key > t->key
         return Search(t->right, key);
-    }
 }
 
 template<typename KeyType, typename ValueType>
 typename SBTreeMap<KeyType, ValueType>::Tree SBTreeMap<KeyType, ValueType>::Remove(SBTreeMap<KeyType, ValueType>::Tree t, KeyType key) {
-    if (t == NULL) {
+    if (t == NULL)
         return t;
+    if (key < t->key) {
+        size_t left_size = GetSize(t->left);
+        t->left = Remove(t->left, key);
+        if (GetSize(t->left) < left_size) {
+            t->size--;
+            t = MaintainRight(t);
+        }
     }
-    if (key == t->key) {
-        if (t->left == NULL && t->right == NULL) {
-            delete t;
-            t = NULL;
+    else if (key > t->key) {
+        size_t right_size = GetSize(t->right);
+        t->right = Remove(t->right, key);
+        if (GetSize(t->right) < right_size) {
+            t->size--;
+            t = MaintainLeft(t);
         }
-        else if (t->left && t->right == NULL) {
+    }
+    else { //key == t->key
+        if (t->left == NULL || t->right == NULL) {
             Tree tmp = t;
-            t = t->left;
-            delete tmp;
-        }
-        else if (t->left == NULL && t->right) {
-            Tree tmp = t;
-            t = t->right;
+            if (t->left) t = t->left;
+            else if (t->right) t = t->right;
+            else t = NULL;
             delete tmp;
         }
         else {
-            Tree left_max = t->left;
-            while (left_max->right) 
-                left_max = left_max->right;
-            t->key = left_max->key;
-            t->left = Remove(t->left, left_max->key);
+            Tree leftMax = t->left;
+            while (leftMax->right)
+                leftMax = leftMax->right;
+            t->key = leftMax->key;
+            t->value = leftMax->value;
+            t->left = Remove(t->left, leftMax->key);
             t->size--;
             t = MaintainRight(t);
-        }
-    }
-    else if (key < t->key) {
-        size_t tmp_size = GetSize(t->left);
-        t->left = Remove(t->left, key);
-        if (GetSize(t->left) < tmp_size) {
-            t->size--;
-            t = MaintainRight(t);
-        }
-    }
-    else {
-        size_t tmp_size = GetSize(t->right);
-        t->right = Remove(t->right, key);
-        if (GetSize(t->right) < tmp_size) {
-            t->size--;
-            t = MaintainLeft(t);
         }
     }
     return t;
@@ -211,25 +201,20 @@ void SBTreeMap<KeyType, ValueType>::DeleteTree(SBTreeMap<KeyType, ValueType>::Tr
     DeleteTree(t->right);
     delete t;
 }
-
 /* ---------------------------------------------------------------- SBTreMap public functions ---------------------------------------------------------------- */
 
-template<typename KeyType, typename ValueType>
+template <typename KeyType, typename ValueType>
 void SBTreeMap<KeyType, ValueType>::Update(KeyType key, Updater<KeyType, ValueType> *p_updater) {
-    static int cnt = 0;
     t_ = Insert(t_, key, p_updater);
-    cnt++;
 }
 
 template<typename KeyType, typename ValueType>
 bool SBTreeMap<KeyType, ValueType>::Get(KeyType key, ValueType *p_value) {
-    Tree t = NULL;
-    t = Search(t_, key);
-    if (t) {
-        *p_value = t->value;
-        return true;
-    }
-    return false;
+    Tree t = Search(t_, key);
+    if (t == NULL)
+        return false;
+    *p_value = t->value;
+    return true;
 }
 
 template<typename KeyType, typename ValueType>

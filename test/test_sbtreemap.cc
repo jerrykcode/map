@@ -14,7 +14,7 @@ TEST(SBTreeMap, IntIntPutAndGet) {
 }
 
 TEST(SBTreeMap, IntIntHasKey) {
-	Tester<int, int> tester(sbt_test_num, 0 - sbt_test_num/100, sbt_test_num/100, 0 - sbt_test_num/100, sbt_test_num/100);
+	Tester<int, int> tester(sbt_test_num, 0 - sbt_test_num, sbt_test_num, 0 - sbt_test_num, sbt_test_num);
 	Map<int, int> * map = new SBTreeMap<int, int>();
 	tester.TestHasKey(map);
 	delete map;
