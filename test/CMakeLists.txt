@@ -2,6 +2,7 @@ add_executable(
     unit_tests
     test_avltreemap.cc
     test_sbtreemap.cc
+	test_rbtreemap.cc
     )
 
 target_link_libraries(

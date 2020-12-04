@@ -86,7 +86,6 @@ inline void Tester<KeyType, ValueType>::TestHasKey(Map<KeyType, ValueType>* test
 
 template<typename KeyType, typename ValueType>
 inline void Tester<KeyType, ValueType>::TestRemove(Map<KeyType, ValueType>* testing_map) {
-
     map<KeyType, ValueType> std_map; //std::map
 	size_t i;
 	//Random for key and value
@@ -96,7 +95,6 @@ inline void Tester<KeyType, ValueType>::TestRemove(Map<KeyType, ValueType>* test
 	for (i = 0; i < test_num; i++) {
 		KeyType key = key_random.Rand();
 		ValueType value = value_random.Rand();
-		//cout << "key: " << key << "----------value: " << value << endl;
 		testing_map->Put(key, value);
 		std_map[key] = value;
 	}
