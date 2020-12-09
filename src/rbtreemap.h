@@ -213,23 +213,19 @@ bool RBTreeMap<KeyType, ValueType>::Remove(RBTreeMap<KeyType, ValueType>::Tree t
         else if (key > t->key)
             t = t->right;
         else { //key == t->key
-			Tree original = NULL;
             if (t->left && t->right) {
                 Tree left_max = t->left;
                 while (left_max->right) {
                     left_max = left_max->right;
                 }
-				original = t;
+				t->key = left_max->key;
+				t->value = left_max->value;
                 t = left_max;
             }
             Tree parent = t->parent;
-            bool flag = parent && t->key < parent->key;
+            bool flag = parent && t == parent->left;
             Color t_color = t->color;
             Tree child = t->left ? t->left : t->right;
-			if (original != NULL) {
-				original->key = t->key;
-				original->value = t->value;
-			}
             delete t;
             if (child)
                 child->parent = parent;
